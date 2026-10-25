@@ -1,0 +1,24 @@
+# Multimodal Image-to-Text Pipeline for Mammography Analysis
+**Master's Thesis Project — KTH Royal Institute of Technology & Stockholm University**
+
+This repository contains the codebase for my Master's thesis investigating the transition from standard single-view object detection to multimodal Vision-Language Models (VLMs) for automated BI-RADS classification and mammography report generation.
+
+## Project Architecture
+The research is structured into three sequential phases to rigorously evaluate the necessity and performance of advanced spatial and linguistic modeling in dense breast tissue analysis.
+
+### 📁 [Phase 1: Single-View Faster R-CNN Baseline](./Phase-1-Single-View-Baseline)
+* **Objective:** Establish a performance baseline using a standard 2D object detector (Faster R-CNN with ResNet-50 FPN) on the VinDr-Mammo dataset.
+* **Status:** ✅ Completed
+* **Key Finding:** Quantified the high false-positive rate (FPPI) caused by overlapping tissue in single-view analysis, justifying the need for multi-view architectures.
+
+### 📁 Phase 2: Cross-Attention Transformers (In Progress)
+* **Objective:** Implement a multi-view architecture (e.g., RT-DETR) to enable spatial token exchange between Cranio-Caudal (CC) and Medio-Lateral Oblique (MLO) views.
+
+### 📁 Phase 3: Vision-Language Model Fine-Tuning (Upcoming)
+* **Objective:** Apply Parameter-Efficient Fine-Tuning (LoRA) to adapt an open-source VLM for generating descriptive clinical medical reports and BI-RADS classifications based on multi-view inputs.
+
+## Dataset
+This project utilizes the [VinDr-Mammo Dataset](https://physionet.org/content/vindr-mammo/1.0.0/), consisting of 20,000 full-field digital mammography (FFDM) images with radiologist-annotated bounding boxes and BI-RADS classifications.
+
+## License
+MIT License. See `LICENSE` for more information.
