@@ -1,32 +1,28 @@
-# Phase 1: Single-View Faster R-CNN Baseline
+# Dual-View Cross-Attention Networks for Mammography Lesion Localization and BI-RADS Classification
+**Master's Thesis Project — KTH Royal Institute of Technology & Stockholm University**
 
-## Overview
-This phase establishes the empirical baseline for the thesis by training a standard single-view object detector on the VinDr-Mammo dataset. The goal is to quantify exactly where and by what margin 2D spatial models fail when analyzing dense breast tissue, specifically focusing on false-positive generation.
+This repository contains the codebase for my Master's thesis investigating the application of dual-view cross-attention mechanisms in full-field digital mammography (FFDM). The primary objective is to resolve single-view projection ambiguity—where overlapping fibroglandular tissue produces false positives—by enforcing ipsilateral spatial correspondence between Cranio-Caudal (CC) and Medio-Lateral Oblique (MLO) planes.
 
-## Architecture & Setup
-* **Model:** Faster R-CNN with a ResNet-50 FPN backbone.
-* **Dataset:** 20,000 converted PNG images from the VinDr-Mammo dataset (80/20 train/val split).
-* **Environment:** Google Colab Pro (A100/V100 GPU).
-* **Framework:** PyTorch & Torchvision.
+## Project Architecture & Roadmap
+The research is structured into three sequential phases to rigorously evaluate the necessity and performance of cross-attention in multi-view medical imaging.
 
-## Key Scripts
-* **`Faster_RCNN_Baseline.ipynb`**: The complete, resumable training pipeline. Includes:
-  * Automated DICOM to PNG conversion and Google Drive backup.
-  * Custom PyTorch DataLoader for handling extreme scale variance in mammography lesions.
-  * Training loop with Stochastic Gradient Descent (SGD).
-  * Evaluation metrics generation (mAP@0.50 and FPPI).
-  * Visualization generation (Loss curves and bounding box predictions).
+### 📁 [Phase 1: Pipeline & Single-View Baseline](./Phase-1-Single-View-Baseline)
+* **Objective:** Establish the empirical baseline for the project by training a standard single-view object detector (Faster R-CNN) on normalized mammography scans.
+* **Status:** ✅ Completed
+* **Key Focus:** Preprocessed the high-resolution VinDr-Mammo DICOMs into standard normalized formats with bounding-box coordinate re-scaling. Benchmarked baseline localization (mAP, FROC-AUC) and highlighted the high false-positive rate inherent to single-view analysis.
 
-## Empirical Results
-The baseline model demonstrated that while a standard Faster R-CNN can extract raw features natively, it severely lacks structural disambiguation.
-* **mAP@0.50:** 0.0314
-* **FPPI (False Positives Per Image):** 0.0481
+### 📁 Phase 2: Dual-View Cross-Attention Module (In Progress)
+* **Objective:** Develop a dual-branch backbone where CC and MLO feature maps interact directly.
+* **Architecture:** Formulating the cross-attention along the anterior-posterior axis so that spatial tokens in the CC view explicitly query candidate regions along the corresponding slice in the MLO view.
+* **Outputs:** Dual prediction heads for lesion-level bounding-box regression and global breast-level BI-RADS classification (1–5).
 
-These metrics actively demonstrate the "alarm fatigue" of 2D models classifying overlapping healthy tissue as abnormalities, directly justifying the transition to the multi-view cross-attention architectures explored in **Phase 2**. 
+### 📁 Phase 3: Empirical Rigor & Fairness Evaluation (Upcoming)
+* **Objective:** Perform robust ablation studies and algorithmic fairness checks.
+* **Metrics:** Isolating the cross-attention module's performance against independent dual-branch ensembles (DBE) and the single-view baseline.
+* **Stratification:** Evaluating performance across all BI-RADS breast density categories to test the model's robustness against severe tissue-masking effects. 
 
-## Usage
-To reproduce these baseline metrics:
-1. Ensure your VinDr-Mammo dataset annotations (`finding_annotations.csv`) and images are accessible.
-2. Open `Faster_RCNN_Baseline.ipynb` in Google Colab.
-3. Update the `base_drive_dir` path to point to your dataset location.
-4. Run all cells sequentially.
+## Dataset
+This project utilizes the [VinDr-Mammo Dataset](https://physionet.org/content/vindr-mammo/1.0.0/), consisting of 20,000 mammography images with radiologist-annotated bounding boxes and BI-RADS classifications.
+
+## License
+MIT License. See `LICENSE` for more information.
