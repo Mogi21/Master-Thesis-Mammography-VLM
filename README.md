@@ -1,28 +1,32 @@
-# Dual-View Cross-Attention Networks for Mammography Lesion Localization and BI-RADS Classification
-**Master's Thesis Project — KTH Royal Institute of Technology & Stockholm University**
+# Phase 1 Baseline: Single-View Mammography Lesion Localization
 
-This repository contains the codebase for my Master's thesis investigating the application of dual-view cross-attention mechanisms in full-field digital mammography (FFDM). The primary objective is to resolve single-view projection ambiguity—where overlapping fibroglandular tissue produces false positives—by enforcing ipsilateral spatial correspondence between Cranio-Caudal (CC) and Medio-Lateral Oblique (MLO) planes.
+This repository contains the Phase 1 baseline implementation and visualization scripts for the master's thesis:  
+**Dual-View Cross-Attention Networks for Mammography Lesion Localization and BI-RADS Classification**.
 
-## Project Architecture & Roadmap
-The research is structured into three sequential phases to rigorously evaluate the necessity and performance of cross-attention in multi-view medical imaging.
+## Project Context
+The code in this repository establishes the performance limits of standard 2D object detection architectures (Faster R-CNN with a ResNet-50-FPN backbone) when applied to single-view mammography scans. Single-view analysis inherently suffers from overlapping tissue ambiguity, making it highly difficult for conventional models to confidently separate true lesions from dense glandular tissue.
 
-### 📁 [Phase 1: Pipeline & Single-View Baseline](./Phase-1-Single-View-Baseline)
-* **Objective:** Establish the empirical baseline for the project by training a standard single-view object detector (Faster R-CNN) on normalized mammography scans.
-* **Status:** ✅ Completed
-* **Key Focus:** Preprocessed the high-resolution VinDr-Mammo DICOMs into standard normalized formats with bounding-box coordinate re-scaling. Benchmarked baseline localization (mAP, FROC-AUC) and highlighted the high false-positive rate inherent to single-view analysis.
+This baseline confirms that structural limitation, achieving a **mAP@0.50 of 0.0234** and an **FPPI of 0.0350**. 
 
-### 📁 Phase 2: Dual-View Cross-Attention Module (In Progress)
-* **Objective:** Develop a dual-branch backbone where CC and MLO feature maps interact directly.
-* **Architecture:** Formulating the cross-attention along the anterior-posterior axis so that spatial tokens in the CC view explicitly query candidate regions along the corresponding slice in the MLO view.
-* **Outputs:** Dual prediction heads for lesion-level bounding-box regression and global breast-level BI-RADS classification (1–5).
+The documented failure of this single-view approach serves as the academic justification for **Phase 2**, which introduces a Dual-View Cross-Attention mechanism to geometrically correlate Cranio-Caudal (CC) and Mediolateral Oblique (MLO) views.
 
-### 📁 Phase 3: Empirical Rigor & Fairness Evaluation (Upcoming)
-* **Objective:** Perform robust ablation studies and algorithmic fairness checks.
-* **Metrics:** Isolating the cross-attention module's performance against independent dual-branch ensembles (DBE) and the single-view baseline.
-* **Stratification:** Evaluating performance across all BI-RADS breast density categories to test the model's robustness against severe tissue-masking effects. 
+## Repository Contents
+* `visualize_baseline.py`: A complete Google Colab extraction, inference, and visualization pipeline. Generates an A2-formatted qualitative comparison highlighting the baseline's low-confidence predictions.
+* `faster_rcnn_baseline.pth`: The saved model weights trained on the VinDr-Mammo dataset (configured for 36 target classes).
 
-## Dataset
-This project utilizes the [VinDr-Mammo Dataset](https://physionet.org/content/vindr-mammo/1.0.0/), consisting of 20,000 mammography images with radiologist-annotated bounding boxes and BI-RADS classifications.
+## Visualizing Failure Modes
+To effectively demonstrate the baseline's struggle with ambiguous features, `visualize_baseline.py` bypasses PyTorch's default internal confidence filter (`box_score_thresh=0.0`). This forces the model to output all generated bounding boxes, no matter how low the confidence score. 
 
-## License
-MIT License. See `LICENSE` for more information.
+The script generates a 3-way side-by-side plot designed for poster presentations:
+1. **Threshold > 0.15**: Demonstrates standard missed detections (false negatives).
+2. **Threshold > 0.02**: Demonstrates scattered, noisy false positives.
+3. **Top 3 Forced Guesses**: Shows the model's highest-ranked predictions to highlight peak confidence limits.
+
+## Execution Instructions
+1. Upload `visualize_baseline.py` and `faster_rcnn_baseline.pth` to your Google Colab environment.
+2. Ensure your VinDr dataset annotations and image ZIP archive are mounted via Google Drive.
+3. Run the script. The script bypasses full-archive extraction by reading the ZIP directly to locate a confirmed ground-truth lesion.
+4. The output `detection_comparison_poster.jpg` will automatically download upon completion.
+
+---
+*Note: This code is open-sourced prior to final thesis completion in compliance with KTH Royal Institute of Technology's open-source sharing policies. The final manuscript will be submitted prior to the formal defense.*
